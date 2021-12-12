@@ -31,16 +31,23 @@ async function parseTelegramMessage(event) {
     if (!peerId) return
 
     for (let condition of config.forward) {
-        if (Math.abs(condition.from) === Number(peerId)
-            && message.message.match(new RegExp(condition.filter.join("|"), "ig")))
+        if (
+            Math.abs(condition.from) === Number(peerId)
+            && message.message.match(new RegExp(condition.filter.join("|"), "ig"))
+        ) {
             await telegram.client.invoke(
-                new Api.messages.ForwardMessages({
-                    fromPeer: message.peerId,
-                    id: [message.id],
-                    randomId: [random(0, 1000000000)],
-                    toPeer: condition.to
-                })
+                message.media ?
+                    new Api.messages.SendMedia({
+                        randomId: random(0, 1000000000),
+                        peer: condition.to,
+                        ...message
+                    }) : new Api.messages.SendMessage({
+                        randomId: random(0, 1000000000),
+                        peer: condition.to,
+                        ...message
+                    })
             )
+        }
     }
 }
 
