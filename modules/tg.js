@@ -17,6 +17,8 @@ async function initialize() {
         onError: (err) => console.error(err),
     });
 
+    console.log(`Config: `, config)
+
     await database.updateSession(client.session.save())
 
     client.addEventHandler(parseTelegramMessage, new NewMessage({}));
@@ -28,13 +30,20 @@ async function parseTelegramMessage(event) {
     const message = event.message;
     const peerId = message.peerId.channelId || message.peerId.chatId;
 
+    console.log(`\nNew message: ${message.message}. Peer id: ${+peerId}`)
+
     if (!peerId) return
 
     for (let condition of config.forward) {
+        console.log(`Math.abs(condition.from) === Number(peerId): ${Math.abs(condition.from) === Number(peerId)}`)
+        console.log(`message.message.match(new RegExp(condition.filter.join("|"), "ig")`, !!message.message.match(new RegExp(condition.filter.join("|"), "ig")))
+
         if (
             Math.abs(condition.from) === Number(peerId)
             && message.message.match(new RegExp(condition.filter.join("|"), "ig"))
         ) {
+
+
             await telegram.client.invoke(
                 message.media ?
                     new Api.messages.SendMedia({
