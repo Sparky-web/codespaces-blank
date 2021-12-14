@@ -39,11 +39,9 @@ async function parseTelegramMessage(event) {
         console.log(`message.message.match(new RegExp(condition.filter.join("|"), "ig")`, !!message.message.match(new RegExp(condition.filter.join("|"), "ig")))
 
         if (
-            Math.abs(condition.from) === Number(peerId)
+            Math.abs(Number(condition.from)) === Number(peerId)
             && message.message.match(new RegExp(condition.filter.join("|"), "ig"))
         ) {
-
-
             await telegram.client.invoke(
                 message.media ?
                     new Api.messages.SendMedia({
