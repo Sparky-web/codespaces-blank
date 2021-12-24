@@ -42,16 +42,17 @@ async function parseTelegramMessage(event) {
             Math.abs(Number(condition.from)) === Number(peerId)
             && message.message.match(new RegExp(condition.filter.join("|"), "ig"))
         ) {
+
             await telegram.client.invoke(
                 message.media ?
                     new Api.messages.SendMedia({
+                        ...message,
                         randomId: random(0, 1000000000),
-                        peer: condition.to,
-                        ...message
+                        peer: "-100" + condition.to
                     }) : new Api.messages.SendMessage({
+                        message: message.message,
                         randomId: random(0, 1000000000),
-                        peer: condition.to,
-                        ...message
+                        peer: "-100" + condition.to
                     })
             )
         }
