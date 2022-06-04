@@ -4,7 +4,7 @@ export default {
     forward: [
         {
             "from": {id: "1782230188", type: "channel"},
-            "to": {id: "1709018360", type: "channel"},
+            "to": {id: "1709018360", type: "chat"},
             "filter": ["hello", "world"]
         }
     ]
