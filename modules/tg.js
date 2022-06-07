@@ -48,13 +48,18 @@ async function parseTelegramMessage(event) {
             if(condition.to.type === "channel") peer = "-100" + peer
             else if(condition.to.type === "chat") peer = "-" + peer
 
+            console.log(message)
+
             await telegram.client.invoke(
-                message.media && message.media.className !== "MessageMediaWebPage" ?
+                message.media
+                && message.media.className !== "MessageMediaWebPage" 
+                 ?
                     new Api.messages.SendMedia({
                         ...message,
                         randomId: random(0, 1000000000),
                         peer
                     }) : new Api.messages.SendMessage({
+                        ...message,
                         message: message.message,
                         randomId: random(0, 1000000000),
                         peer: peer
