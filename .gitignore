@@ -2,6 +2,7 @@ node_modules
 .tmp
 .idea
 .config
+.history
 
 
 package-lock.json
