@@ -3,5 +3,6 @@ node_modules
 .idea
 .config
 
+config.js
 
 package-lock.json
