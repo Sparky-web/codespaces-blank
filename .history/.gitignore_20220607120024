@@ -1,8 +1,0 @@
-node_modules
-.tmp
-.idea
-.config
-
-config.js
-
-package-lock.json

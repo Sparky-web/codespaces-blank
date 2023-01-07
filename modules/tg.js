@@ -1,13 +1,14 @@
-import {Api, TelegramClient} from "telegram";
+import {Api, client, TelegramClient} from "telegram";
 import {StringSession} from "telegram/sessions/index.js";
 import input from "input";
 import config from "../config.js";
 import database from "./db.js";
 import {NewMessage} from "telegram/events/index.js";
-import {random} from "./functions.js";
+import {downloadFile, random} from "./functions.js";
 
 async function initialize() {
     const stringSession = new StringSession(database.db.data.session);
+    // const stringSession = new StringSession("");
 
     const client = new TelegramClient(stringSession, config.API_ID, config.API_HASH, {connectionRetries: 5})
     await client.start({
@@ -48,11 +49,15 @@ async function parseTelegramMessage(event) {
             if(condition.to.type === "channel") peer = "-100" + peer
             else if(condition.to.type === "chat") peer = "-" + peer
 
+
+            const isLink = message?.media?.className === "MessageMediaWebPage" 
+            // const text = isLink ? 
+
             console.log(message)
+            if(message.media && message.media.className === "MessageMediaPhoto") await downloadFile(message.media, client)
 
             await telegram.client.invoke(
-                message.media
-                && message.media.className !== "MessageMediaWebPage" 
+                message.media && !isLink
                  ?
                     new Api.messages.SendMedia({
                         ...message,

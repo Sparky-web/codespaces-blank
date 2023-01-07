@@ -14,7 +14,7 @@
     "input": "^1.0.1",
     "lodash": "^4.17.21",
     "lowdb": "^3.0.0",
-    "telegram": "^2.0.8"
+    "telegram": "^2.15.5"
   },
   "type": "module"
 }
