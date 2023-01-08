@@ -27,9 +27,9 @@ function createFileIfNotExists(absolutePath, contents = "") {
 
     const folder = pathSplat.join("/")
     const folderRelativePath = getRelativePath(folder)
-    const isFolderExists = fs.existsSync(folderRelativePath)
+    const isFolderExists = fs.existsSync(folder)
 
-    if(!isFolderExists) fs.mkdirSync(folderRelativePath, {recursive: true})
+    if(!isFolderExists) fs.mkdirSync(folder, {recursive: true})
 
     fs.writeFileSync(fileRelativePath, contents)
 }
