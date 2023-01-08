@@ -1,5 +1,5 @@
 import filesystem from "./filesystem.js";
-import {client} from "telegram";
+import { client } from "telegram";
 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -20,4 +20,13 @@ export const downloadFile = async (media, _client) => {
     fs.createWriteStream(filename).write(buffer)
 
     return filename
+}
+
+export const getPeer = (peerId, type) => {
+    let peer;
+    if (peerId[0] === "-") peer = peerId.slice(1);
+    if (type === "channel") peer = "-100" + peerId;
+    else if (type === "chat") peer = "-" + peerId;
+
+    return peer
 }
