@@ -1,4 +1,5 @@
 import filesystem from "./filesystem.js";
+import {client} from "telegram";
 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -10,12 +11,10 @@ export function random(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export const downloadFile = async (media, client) => {
-    const buffer = await client.downloadMedia(media, {
-        workers: 1,
-    });
+export const downloadFile = async (media, _client) => {
+    const buffer = await client.downloads.downloadMedia(_client, media);
 
-    const filename = `${join(__dirname + "../.tmp/photos")}/${Date.now()}.jpg`
+    const filename = `${join(__dirname + "/../.tmp/photos")}/${Date.now()}.jpg`
     await filesystem.createFileIfNotExists(filename)
 
     fs.createWriteStream(filename).write(buffer)

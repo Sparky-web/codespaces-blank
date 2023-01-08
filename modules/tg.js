@@ -1,4 +1,4 @@
-import {Api, client, TelegramClient} from "telegram";
+import {Api, TelegramClient, client} from "telegram";
 import {StringSession} from "telegram/sessions/index.js";
 import input from "input";
 import config from "../config.js";
@@ -51,19 +51,33 @@ async function parseTelegramMessage(event) {
 
 
             const isLink = message?.media?.className === "MessageMediaWebPage" 
-            // const text = isLink ? 
+            
+            let messageToSend = {
+                ...message,
+                randomId: random(0, 1000000000),
+                peer
+            }
 
-            console.log(message)
-            if(message.media && message.media.className === "MessageMediaPhoto") await downloadFile(message.media, client)
+            const _client = message._client
+            
+            if(message.media && message.media.className === "MessageMediaPhoto") {
+                const filePath = await downloadFile(message.media, _client)
+                await new Promise(r => setTimeout(r, 500))
+                await telegram.client.sendFile(peer, {
+                    file: filePath,
+                    caption: message.message,
+                    randomId: random(0, 1000000000),
+                });
+
+                return
+            }
+
 
             await telegram.client.invoke(
                 message.media && !isLink
                  ?
-                    new Api.messages.SendMedia({
-                        ...message,
-                        randomId: random(0, 1000000000),
-                        peer
-                    }) : new Api.messages.SendMessage({
+                    new Api.messages.SendMedia(messageToSend) : 
+                    new Api.messages.SendMessage({
                         ...message,
                         message: message.message,
                         randomId: random(0, 1000000000),
