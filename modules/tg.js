@@ -4,7 +4,7 @@ import input from "input";
 import config from "../config.js";
 import database from "./db.js";
 import { NewMessage } from "telegram/events/index.js";
-import { downloadFile, random, getPeer } from "./functions.js";
+import { downloadFile, random, getPeer, getTopicId } from "./functions.js";
 
 async function initialize() {
     const stringSession = new StringSession(database.db.data.session);
@@ -29,11 +29,10 @@ async function initialize() {
 
     client.addEventHandler(parseTelegramMessage, new NewMessage({}));
 
-    const data = await client.getMessages("-1001794644849", { ids: 3 });
-    console.log(data);
-
     telegram.client = client;
+
 }
+
 
 async function parseTelegramMessage(event) {
     const client = telegram.client
@@ -66,44 +65,41 @@ async function parseTelegramMessage(event) {
         let peer = getPeer(condition.to.id, condition.to.type)
         let fromPeer = getPeer(condition.from.id, condition.from.type)
 
-        if (condition.topic) {
-            if (!message.replyTo?.forumTopic) return
-
-            const [topicMessage] = await client.getMessages(fromPeer, { ids: message.replyTo.replyToMsgId });
-            if (topicMessage?.action?.title !== condition.topic) return
-        }
-
-        const isLink = message?.media?.className === "MessageMediaWebPage";
-
         let messageToSend = {
             ...message,
             randomId: random(0, 1000000000),
             peer,
         };
 
-        const _client = message._client;
+        if (condition.fromTopic) {
+            if (!message.replyTo?.forumTopic) return
+
+            const [topicMessage] = await client.getMessages(fromPeer, { ids: message.replyTo.replyToMsgId });
+            if (topicMessage?.action?.title !== condition.fromTopic) return
+        }
+
+        if (condition.toTopic) {
+            messageToSend.replyToMsgId = await getTopicId(peer, condition.toTopic, client)
+        }
 
         if (message.media && message.media.className === "MessageMediaPhoto") {
-            const filePath = await downloadFile(message.media, _client);
+            const filePath = await downloadFile(message.media, client);
             await new Promise((r) => setTimeout(r, 500));
             await telegram.client.sendFile(peer, {
                 file: filePath,
                 caption: message.message,
                 randomId: random(0, 1000000000),
+                replyTo: messageToSend.replyToMsgId
             });
 
             return;
         }
 
+        const isLink = message?.media?.className === "MessageMediaWebPage";
         await telegram.client.invoke(
             message.media && !isLink
                 ? new Api.messages.SendMedia(messageToSend)
-                : new Api.messages.SendMessage({
-                    ...message,
-                    message: message.message,
-                    randomId: random(0, 1000000000),
-                    peer: peer,
-                })
+                : new Api.messages.SendMessage({ ...messageToSend, message: message.message })
         );
     }
 }

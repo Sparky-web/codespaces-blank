@@ -4,9 +4,10 @@ export default {
     forward: [
         {
             "from": { id: "1794644849", type: "channel" },
-            "to": { id: "1844094387", type: "channel" },
+            "to": { id: "1794644849", type: "channel" },
             "filter": ["hello", "world"],
-            "topic": "Путешествия"
+            "fromTopic": "Путешествия",
+            "toTopic": "тема тест 1"
         }
     ]
 }

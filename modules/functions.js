@@ -30,3 +30,21 @@ export const getPeer = (peerId, type) => {
 
     return peer
 }
+
+
+export async function getTopicId(peer, topic, client) {
+    const messages = await client.getMessages(peer, { search: topic, reverse: true, limit: 1000 })
+
+    let topicId
+
+    for (let message of messages) {
+        if (
+            (message?.action?.className === 'MessageActionTopicCreate' || messages.action?.className === 'MessageActionTopicEdit')
+            && message.action?.title?.match(new RegExp(topic, "ig"))
+        ) {
+            topicId = message.id
+        }
+    }
+
+    return topicId
+}
