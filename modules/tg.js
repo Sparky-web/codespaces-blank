@@ -59,7 +59,7 @@ async function parseTelegramMessage(event) {
                 message.message.match(new RegExp(condition.filter.join("|"), "ig"))
             )
         )
-            return;
+            continue;
 
 
         let peer = getPeer(condition.to.id, condition.to.type)
